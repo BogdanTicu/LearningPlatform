@@ -1,0 +1,26 @@
+Utilizator{id=2, name='Ana', email='ana@info.ro', password='123456'}
+Utilizator{id=0, name='Andrei', email='andrei@gmail.ro', password='123456'}
+Utilizator{id=1, name='Mihai', email='mihai@gmail.ro', password='123456'}
+
+
+3
+Ana
+ana@gmail.ro
+123456
+Andrei
+andrei@gmail.ro
+123456
+Bob
+bob@gmail.ro
+123456
+
+3
+Ana
+ana@user.ro
+123456
+Andrei
+andrei@user.ro
+123456
+Luca
+luca@user.ro
+123456

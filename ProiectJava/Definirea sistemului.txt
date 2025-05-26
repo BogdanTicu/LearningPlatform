@@ -1,0 +1,8 @@
+Definirea sistemului:
+1. Un professor poate crea un curs
+2. Un professor poate sterge un curs
+3. Un professor poate crea un test pentru un anume curs
+4. Un professor poate corecta un test si sa acorde un punctaj
+5. Un Student poate sa se inscrie la un curs
+6. Un student poate sa vada testele necompletate
+7. Un student poate sa dea un test, completand raspunsul pentru fiecare intrebare.
