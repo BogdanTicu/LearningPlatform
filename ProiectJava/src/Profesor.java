@@ -1,75 +1,68 @@
-import java.util.Objects;
-import java.util.Scanner;
 import java.util.Vector;
 
-public class Profesor extends Utilizator{
+public class Profesor extends Utilizator {
     protected Vector<Curs> listaCursuriPredate;
     private Vector<RezolvareTest> testeRezolvateDeStudenti;
 
-    Profesor(String name, String email, String password) {
-        super(name, email, password);
-        this.listaCursuriPredate = new Vector<Curs>();
-        this.testeRezolvateDeStudenti = new Vector<RezolvareTest>();
+    public Profesor(String name, String email, String password) {
+        super(name, email, password, "PROFESOR");
+        this.listaCursuriPredate = new Vector<>();
+        this.testeRezolvateDeStudenti = new Vector<>();
+    }
+
+    public Profesor(int id, String name, String email, String password) {
+        super(id, name, email, password, "PROFESOR");
+        this.listaCursuriPredate = new Vector<>();
+        this.testeRezolvateDeStudenti = new Vector<>();
     }
 
     public void afisare_cursuri() {
-        for(Curs curs: listaCursuriPredate){
-            System.out.println(curs);
-            for(Test t :curs.teste)
-                System.out.println(t);
-        }
-    }
-    public void adaugare_curs(Curs c) {
-        this.listaCursuriPredate.add(c);
-    }
-
-
-    public void sterge_curs(String titlu){
-        // int id = c.getId();
-        for(int i=0; i<listaCursuriPredate.size(); i++){
-            if(Objects.equals(listaCursuriPredate.get(i).titlu, titlu)){
-                listaCursuriPredate.remove(i);
+        if (listaCursuriPredate.isEmpty()) {
+            System.out.println("Nu ai niciun curs.");
+        } else {
+            for (Curs c : listaCursuriPredate) {
+                System.out.println("Curs: " + c.getTitlu() + " | Descriere: " + c.getDescriere());
             }
         }
     }
+    public void adaugare_curs(Curs c) {
+        listaCursuriPredate.add(c);
+        System.out.println("Curs adăugat cu succes.");
+        //CursDB.insert(c);
+    }
+    public void sterge_curs(String titlu) {
+        boolean removed = listaCursuriPredate.removeIf(c -> c.getTitlu().equals(titlu));
+        if (removed) {
+            System.out.println("Curs șters cu succes.");
+        } else {
+            System.out.println("Cursul nu a fost găsit.");
+        }
 
-    public Vector<RezolvareTest>getTesteRezolvateDeStudenti()
-    {
+
+    }
+    public void afisareRezolvari() {
+        testeRezolvateDeStudenti = RezolvareTestDB.getTesteRezolvateDeStudenti(this);
+        if (testeRezolvateDeStudenti.isEmpty()) {
+            System.out.println("Nu există teste rezolvate.");
+            return;
+        }
+
+        for (RezolvareTest rez : testeRezolvateDeStudenti) {
+            System.out.println("Student: " + rez.getStudent().getName());
+            System.out.println("Curs: " + rez.getTestOriginal().getCurs().getTitlu());
+            System.out.println("Scor: " + rez.getScor());
+            System.out.println("-------------");
+        }
+    }
+    public Vector<RezolvareTest> getTesteRezolvateDeStudenti() {
+
         return testeRezolvateDeStudenti;
     }
-    public void adaugaRezolvareTest(RezolvareTest rezolvare) {
-        this.testeRezolvateDeStudenti.add(rezolvare);
-    }
-
-    public void afiseazaRezolvari() {
-        System.out.println("Rezolvări primite:");
-        for (RezolvareTest rez : testeRezolvateDeStudenti) {
-            System.out.println(rez);
-        }
-    }
-
-
-    public void adauga_test(Curs c, Test t)
-    {
-        t.setCurs(c);
-
-    }
-    public void NotareTest(RezolvareTest rezolvare)
-    {
-        Scanner scanner = new Scanner(System.in);
-        int totalPuncte = 0;
-
-        System.out.println("Notare test de la student: " + rezolvare.getStudent().name);
-
-        for (RezolvareIntrebare r : rezolvare.getRaspunsuriStudent()) {
-            System.out.println(r.getIntrebare());
-            System.out.println("Răspuns student: " + r.getRaspunsStudent());
-            System.out.print("Acordă punctaj (int): ");
-            int punctaj = Integer.parseInt(scanner.nextLine());
-            totalPuncte += punctaj;
-        }
-
-        rezolvare.setScor(totalPuncte);
-        System.out.println("Scor total acordat: " + totalPuncte);
+    @Override
+    public String toString() {
+        return "Profesor{" +
+                ", name='" + this.getName() + '\'' +
+                ", email='" + this.getEmail() + '\'' +
+                '}';
     }
 }

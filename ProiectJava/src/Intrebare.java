@@ -1,24 +1,45 @@
 public class Intrebare {
+    private int id;
     protected String cerinta;
     protected String raspuns;
 
-    Intrebare(String cerinta)
-    {
+    public Intrebare(String cerinta) {
         this.cerinta = cerinta;
         this.raspuns = null;
     }
-    Intrebare(String cerinta, String raspuns) {
+
+    public Intrebare(String cerinta, String raspuns) {
         this.cerinta = cerinta;
         this.raspuns = raspuns;
-    }
-    Intrebare(String cerinta, String raspuns,float punctaj) {
-        this.cerinta = cerinta;
-        this.raspuns = raspuns;
-        //this.punctaj = punctaj;
     }
 
-    @Override
-    public String toString() {
-        return "Cerinta: " + this.cerinta ;
+    public Intrebare(int id, String cerinta, String raspuns) {
+        this(cerinta, raspuns);
+        this.id = id;
+    }
+
+    public String getCerinta() {
+        return cerinta;
+    }
+
+    public String getRaspuns() {
+        return raspuns;
+    }
+
+    public int getId() {
+        return id;
+    }
+    public void setCerinta(String cerinta) {
+        this.cerinta = cerinta;
+    }
+    public void setRaspuns(String raspuns) {
+        this.raspuns = raspuns;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getText() {
+        return cerinta;
     }
 }

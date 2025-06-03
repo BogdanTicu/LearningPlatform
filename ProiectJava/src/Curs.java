@@ -6,46 +6,29 @@ public class Curs {
     protected String descriere;
     private String nota;
     private Profesor profesor;
-    protected Vector<Test>teste;
-    static int counterCurs = 0;
+    protected Vector<Test> teste;
 
-    Curs(String titlu) {
-        this.titlu = titlu;
-        this.descriere = "";
-        this.nota = "";
-        this.teste=new Vector<>();
-        this.profesor=null;
-        counterCurs++;
-    }
-    Curs(String titlu, String descriere,Profesor profesor) {
-        this.id = counterCurs;
-        counterCurs++;
+
+    public Curs(String titlu, String descriere, String nota, Profesor profesor) {
         this.titlu = titlu;
         this.descriere = descriere;
-        this.nota = "";
-        this.teste=new Vector<>();
-        this.profesor=profesor;
-        //this.profesor = profesor;
-    }
-    @Override
-    public String toString() {
-        return "Curs{" +
-                "id=" + id +
-                ", titlu='" + titlu + '\'' +
-                ", descriere='" + descriere + '\'' +
-                '}';
+        this.nota = nota;
+        this.profesor = profesor;
+        this.teste = new Vector<>();
     }
 
-    public Profesor getProfesor() {
-        return profesor;
+    public Curs(int id, String titlu, String descriere, String nota, Profesor profesor) {
+        this(titlu, descriere, nota, profesor);
+        this.id = id;
     }
-    public int getId() {
-        return id;
-    }
-    public void setNota(String nota) {
-        this.nota = nota;
-    }
-    public String getNota() {
-        return nota;
+
+    public int getId() { return id; }
+    public String getTitlu() { return titlu; }
+    public String getDescriere() { return descriere; }
+    public String getNota() { return nota; }
+    public Profesor getProfesor() { return profesor; }
+
+    public void setId(int anInt) {
+        id = anInt;
     }
 }

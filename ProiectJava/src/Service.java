@@ -1,193 +1,96 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
-import java.util.Vector;
-import java.util.ArrayList;
-import java.util.TreeSet;
-import java.util.Comparator;
+import java.util.*;
+import java.io.*;
+
 public class Service {
     static TreeSet<Profesor> profesorSet;
     static ArrayList<Student> studentVector;
     static Vector<Curs> cursVector;
-    Service() {
-        profesorSet = new TreeSet<>(Comparator.comparing(Profesor::getEmail));
-        studentVector = new ArrayList<>();
-        cursVector = new Vector<>();
-    }
-    public String CitireString(Scanner sc){
 
-        StringBuilder descriere= new StringBuilder();
-        while(sc.hasNext()) {
+    public Service() {
+        profesorSet = ProfesorDB.getAllProfesors();
+        studentVector = StudentDB.getAllStudents();
+        cursVector = CursDB.getCursVector();
+
+    }
+
+    public String CitireString(Scanner sc) {
+        StringBuilder descriere = new StringBuilder();
+        while (sc.hasNext()) {
             String cuv = sc.next();
-            if(cuv.equals("-1"))
+            if (cuv.equals("-1"))
                 break;
             else
                 descriere.append(cuv).append(" ");
         }
         return descriere.toString();
     }
-    public void init_studenti()
-    {
-        int n;
-        Scanner sc = null;
-        try {
-            sc = new Scanner(new File("studenti.txt"));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        n = sc.nextInt();
-        for(int i = 0; i < n; i++){
-            String name, email, password;
-            name = sc.next();
-            email = sc.next();
-            password = sc.next();
-            name = name.trim();
-            email = email.trim();
-            password = password.trim();
-            studentVector.add(new Student(name, email, password));
-        }
-    }
 
-    public void init_profesori()
-    {
-        int n;
-        Scanner sc = null;
-        try {
-            sc = new Scanner(new File("profesori.txt"));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        n = sc.nextInt();
-        for(int i = 0; i < n; i++){
-            String name, email, password;
-            name = sc.next();
-            email = sc.next();
-            password = sc.next();
-            name = name.trim();
-            email = email.trim();
-            password = password.trim();
-            profesorSet.add(new Profesor(name, email, password));
-        }
-    }
-    public void scrie_profesori()
-    {
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter("profesori.txt");
-            fw.write(profesorSet.size()+"\n");
-            for(Profesor profesor : profesorSet){
-                fw.write(profesor.name+"\n");
-                fw.write(profesor.email+"\n");
-                fw.write(profesor.password+"\n");
-            }
-            fw.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+
+    public void meniu() {
+        Admin admin = AdminDB.getByEmailAndPassword("admin@gmail.com", "admin123");
+        if (admin == null) {
+            admin = new Admin("admin", "admin@gmail.com", "admin123");
+            AdminDB.insert(admin);
         }
 
-    }
-
-    public void scrie_studenti(){
-        FileWriter fw = null;
-        try {
-           fw = new FileWriter("studenti.txt");
-            fw.write(studentVector.size()+"\n");
-            for(int i = 0; i < studentVector.size(); i++){
-                fw.write(studentVector.get(i).name+"\n");
-                fw.write(studentVector.get(i).email+"\n");
-                fw.write(studentVector.get(i).password+"\n");
-            }
-            fw.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    public void meniu()
-    {
-        Admin admin = new Admin("admin", "admin@gmail.com", "admin123");
         System.out.println("1. Login ca admin");
         System.out.println("2. Login ca profesor");
         System.out.println("3. Login ca student");
         System.out.println("4. Deconectare aplicatie");
+
         Scanner sc = new Scanner(System.in);
         int optiuni = sc.nextInt();
         sc.nextLine();
-        if(optiuni == 1)
-        {
-            String email, password;
-            //2sc.nextLine();
+
+        if (optiuni == 1) {
             System.out.println("Introdu mail:");
-            email = CitireString(sc);
+            String email = sc.nextLine();
             System.out.println("Introdu parola:");
-            password = sc.nextLine();
-            if(admin.login(email, password)) {
-                meniu_admin(admin);
+            String password = sc.nextLine();
+            Admin a = AdminDB.getByEmailAndPassword(email, password);
+            if (a != null) {
+                meniu_admin(a);
             } else {
                 System.out.println("Mail sau parola incorecte!");
                 meniu();
             }
-        }
-        else if(optiuni==2)
-        {
-            String email;
-            String password;
-            int ok=0;
+        } else if (optiuni == 2) {
             System.out.println("Introdu mail:");
-            email = sc.nextLine();
+            String email = sc.nextLine();
             System.out.println("Introdu password:");
-            password = sc.nextLine();
-            for(Profesor p: profesorSet) {
-                if (p.login(email, password) == true) {
-                    ok=1;
-                    meniu_profesor(p);
-                    break;
-                }
-            }
-            if(ok==0)
-            {
+            String password = sc.nextLine();
+            Profesor p = ProfesorDB.getByEmailAndPassword(email, password);
+            if (p != null) {
+                meniu_profesor(p);
+            } else {
                 System.out.println("Mail sau parola incorecte!");
                 meniu();
             }
-        }
-        else if(optiuni==3)
-        {
-            String email;
-            String password;
-            int ok=0;
+        } else if (optiuni == 3) {
             System.out.println("Introdu mail:");
-            email = sc.nextLine();
+            String email = sc.nextLine();
             System.out.println("Introdu password:");
-            password = sc.nextLine();
-            for(int i = 0; i<studentVector.size(); i++) {
-                if (studentVector.get(i).login(email, password) == true) {
-                    ok=1;
-                    meniu_student(studentVector.get(i));
-                }
-            }
-            if(ok==0)
-            {
+            String password = sc.nextLine();
+            Student s = StudentDB.getByEmailAndPassword(email, password);
+            if (s != null) {
+                meniu_student(s);
+            } else {
                 System.out.println("Mail sau parola incorecte!");
+                meniu();
             }
-
-        }
-        else if(optiuni==4)
-        {
-            scrie_studenti();
-            scrie_profesori();
-        }
-        else {
+        } else if (optiuni == 4) {
+            System.out.println("La revedere!");
+        } else {
             System.out.println("Optiune invalida");
             meniu();
         }
-
     }
 
     public void meniu_admin(Admin admin) {
         Scanner sc = new Scanner(System.in);
+        profesorSet = ProfesorDB.getAllProfesors();
+        studentVector = StudentDB.getAllStudents();
         while (true) {
             System.out.println("1. Adaugă profesor");
             System.out.println("2. Șterge profesor");
@@ -195,7 +98,10 @@ public class Service {
             System.out.println("4. Șterge student");
             System.out.println("5. Vezi lista profesori");
             System.out.println("6. Vezi lista studenți");
-            System.out.println("7. Logout");
+            System.out.println("7. Actualizare date cont profesor");
+            System.out.println("8. Actualizare dat cont student");
+            System.out.println("9. Afiseaza raport studenti");
+            System.out.println("10. Logout");
             int opt = sc.nextInt();
             sc.nextLine();
 
@@ -206,10 +112,27 @@ public class Service {
                 String email = sc.nextLine();
                 System.out.print("Parola: ");
                 String parola = sc.nextLine();
-                admin.adaugaProfesor(new Profesor(nume, email, parola));
+
+                Profesor pr = new Profesor(nume, email, parola);
+                ProfesorDB.insert(pr);
+                AuditService.log("Profesor adaugat de admin");
             } else if (opt == 2) {
                 System.out.print("Email profesor de șters: ");
-                admin.stergeProfesor(sc.nextLine());
+                String email = sc.nextLine();
+
+                Profesor p = Service.profesorSet.stream()
+                        .filter(prof -> prof.getEmail().equals(email))
+                        .findFirst()
+                        .orElse(null);
+
+                if (p != null) {
+                    ProfesorDB.deleteById(p.getId());
+                    profesorSet.remove(p);
+                    System.out.println("Profesor șters cu succes.");
+                    AuditService.log("Profesor sters de admin");
+                } else {
+                    System.out.println("Profesorul nu a fost găsit.");
+                }
             } else if (opt == 3) {
                 System.out.print("Nume: ");
                 String nume = sc.nextLine();
@@ -218,25 +141,82 @@ public class Service {
                 System.out.print("Parola: ");
                 String parola = sc.nextLine();
                 admin.adaugaStudent(new Student(nume, email, parola));
+                AuditService.log("Student adaugat de admin");
             } else if (opt == 4) {
                 System.out.print("Email student de șters: ");
-                admin.stergeStudent(sc.nextLine());
+                String email = sc.nextLine();
+
+                Student s = studentVector.stream()
+                        .filter(st -> st.getEmail().equals(email))
+                        .findFirst()
+                        .orElse(null);
+
+                if (s != null) {
+                    StudentDB.deleteById(s.getId());
+                    studentVector.remove(s);
+                    System.out.println("Student șters cu succes.");
+                    AuditService.log("Student sters de admin");
+                } else {
+                    System.out.println("Studentul nu a fost găsit.");
+                }
             } else if (opt == 5) {
                 admin.afiseazaProfesori();
             } else if (opt == 6) {
                 admin.afiseazaStudenti();
-            } else if (opt == 7) {
+            }else if(opt == 7) {
+                System.out.println("Actualizare date cont profesor:");
+                System.out.println("Pt ce prof vrei sa editezi? Introdu id: ");
+                int id = sc.nextInt();
+                sc.nextLine();
+                System.out.print("Nume nou: ");
+                String nume = sc.nextLine();
+                System.out.print("Email nou: ");
+                String email = sc.nextLine();
+                System.out.print("Parolă nouă: ");
+                String password  = sc.nextLine();
+                Profesor p = ProfesorDB.getById(id);
+                if(p!=null) {
+                    p.setName(nume);
+                    p.setEmail(email);
+                    p.setPassword(password);
+                    ProfesorDB.updateProfesor(p);
+                }
+                meniu_admin(admin);
+            }
+            else if(opt == 8) {
+                System.out.println("Actualizare date cont student:");
+                System.out.println("Pt ce profesori vrei sa editezi? Introdu id: ");
+                int id = sc.nextInt();
+                sc.nextLine();
+                System.out.print("Nume nou: ");
+                String name = sc.nextLine();
+                System.out.print("Email nou: ");
+                String email = sc.nextLine();
+                System.out.print("Parolă nouă: ");
+                String password  = sc.nextLine();
+
+                Student s = StudentDB.getStudentById(id);
+                if(s!=null) {
+                    s.setName(name);
+                    s.setEmail(email);
+                    s.setPassword(password);
+                    StudentDB.updateStudent(s);
+                }
+                meniu_admin(admin);
+            }
+            else if(opt == 9){
+                Raport.genereazaRaportStudenti();
+            }
+            else if (opt == 10) {
                 meniu();
                 return;
             } else {
                 System.out.println("Opțiune invalidă.");
             }
-
         }
     }
 
-    public void meniu_profesor(Profesor p)
-    {
+    public void meniu_profesor(Profesor p) {
         int nr;
         Scanner sc = new Scanner(System.in);
         System.out.println("Operatii profesor");
@@ -248,183 +228,150 @@ public class Service {
         System.out.println("6. Noteaza un test");
         System.out.println("7. Logout");
         nr = sc.nextInt();
-        if(nr==1)
-        {
+        if (nr == 1) {
+            p.listaCursuriPredate = CursDB.getCursuriByProfesor(p);
             p.afisare_cursuri();
             meniu_profesor(p);
-        }
-        else if(nr==2)
-        {
-            String titlu;
+        } else if (nr == 2) {
             System.out.println("Introdu titlu:");
-            titlu = sc.next();
+            String titlu = sc.next();
             System.out.println("Introdu descriere:");
             String descriere = CitireString(sc);
-            Curs c = new Curs(titlu, descriere,p);
+            Curs c = new Curs(titlu, descriere, "", p);
             p.adaugare_curs(c);
             cursVector.add(c);
+            CursDB.insert(c);
+            AuditService.log("A fost adaugat un curs");
             meniu_profesor(p);
-        }
-        else if (nr==3)
-        {
-            String titlu;
+        } else if (nr == 3) {
             System.out.println("Introdu titlu:");
-            titlu = sc.next();
+            String titlu = sc.next();
             p.sterge_curs(titlu);
+            CursDB.deleteByTitle(titlu);
+            AuditService.log("Curs sters ");
             meniu_profesor(p);
-        }
-        else if(nr==4){
-            String curs;
-            int n,cIndex=-1;
+        } else if (nr == 4) {
             System.out.println("Pt ce curs creezi testul: ");
-            curs = sc.next();
-            curs = curs.trim();
-            for(int i=0;i<p.listaCursuriPredate.size();i++)
-            {
-                if(curs.equals(p.listaCursuriPredate.get(i).titlu))
-                {
+            String curs = sc.next().trim();
+            int cIndex = -1;
+            for (int i = 0; i < p.listaCursuriPredate.size(); i++) {
+                if (curs.equals(p.listaCursuriPredate.get(i).titlu)) {
                     cIndex = i;
                     break;
                 }
             }
-            if(cIndex==-1)
-            {
+            if (cIndex == -1) {
                 System.out.println("Nu am gasit cursul");
                 meniu_profesor(p);
             }
             System.out.println("Introdu numarul de intrebari: ");
-            n = sc.nextInt();
+            int n = sc.nextInt();
             Test t = new Test(p.listaCursuriPredate.get(cIndex));
-            for(int i=0;i<n;i++)
-            {
-                String question,answer;
+            TestDB.insert(t);
+            for (int i = 0; i < n; i++) {
                 System.out.println("Introdu intrebare: ");
-                question=CitireString(sc);
+                String question = CitireString(sc);
                 System.out.println("Introdu raspuns: ");
-                answer = CitireString(sc);
-                Intrebare intrebare = new Intrebare(question,answer);
-                t.addIntrebare(intrebare);
+                String answer = CitireString(sc);
+                Intrebare intrebare = new Intrebare(question, answer);
+                IntrebareDB.insert(intrebare, t);
+                t.adaugaIntrebare(intrebare);
             }
             p.listaCursuriPredate.get(cIndex).teste.add(t);
             meniu_profesor(p);
-        }
-        else if(nr==5)
-        {
-            p.afiseazaRezolvari();
+        } else if (nr == 5) {
+            p.afisareRezolvari();
             meniu_profesor(p);
-        }
-        else if(nr==6)
-        {
+        } else if (nr == 6) {
             Vector<RezolvareTest> t = p.getTesteRezolvateDeStudenti();
             for (int i = 0; i < t.size(); i++) {
                 RezolvareTest rez = t.get(i);
-                System.out.println(i + ". Test de la " + rez.getStudent().name+ " la " + rez.getTestOriginal().getCurs().titlu);
+                System.out.println(i + ". Test de la " + rez.getStudent().name + " la " + rez.getTestOriginal().getCurs().titlu);
             }
-
             System.out.print("Alege testul pe care vrei să-l notezi (index): ");
             int idx = sc.nextInt();
-
             if (idx >= 0 && idx < t.size()) {
-                System.out.println(t.get(idx));
+                RezolvareTest rez = t.get(idx);
+                System.out.println(rez);
+                System.out.print("Introdu punctajul: ");
+                int notaFinala = sc.nextInt();
+                rez.setScor(notaFinala);
+                RezolvareTestDB.updateScor(rez.getId(), notaFinala);
+                System.out.println("Testul a fost corectat.");
+                AuditService.log("Un profesor a corectat un test.");
+
             } else {
                 System.out.println("Index invalid.");
             }
-            RezolvareTest rez = t.get(idx);
-            int notaFinala;
-            try {
-                System.out.print("Introdu punctajul: ");
-                notaFinala = sc.nextInt();
-                rez.setScor(notaFinala);
-            }
-            catch(ArithmeticException e) {
-                System.out.println(e.getMessage());
-            }
-
-            System.out.println("Testul a fost corectat.");
             meniu_profesor(p);
+
         }
-        else if(nr==7)
-        {
+        else if (nr == 7) {
             meniu();
-        }
-        else{
+        } else {
             System.out.println("Optiunea aleasa e invalida!");
             meniu_profesor(p);
         }
     }
-    public void meniu_student(Student s)
-    {
+
+    public void meniu_student(Student s) {
+        s.incarcaCursuriDinBD();
         System.out.println("Operatii student");
         System.out.println("1. Vizualizare cursuri");
         System.out.println("2. Inscrie-te la un curs");
         System.out.println("3. Vizualizare teste");
         System.out.println("4. Rezolva un test");
+        System.out.println("5. Vezi teste rezolvate si notele obtinute");
         System.out.println("5. Logout");
         Scanner sc = new Scanner(System.in);
         int nr = sc.nextInt();
-        if(nr==1)
-        {
+        if (nr == 1) {
             s.afisare_cursuri_student();
             meniu_student(s);
-        }
-        else if(nr==2)
-        {
-            int ok=0;
-            System.out.println("Introdu titlul cursului:\n");
+        } else if (nr == 2) {
+            System.out.println("Introdu titlul cursului:");
             String str = sc.next();
-            for(Curs c: cursVector)
-            {
-                if(str.equals(c.titlu))
-                {
-                    ok=1;
+            boolean ok = false;
+
+            for (Curs c : cursVector) {
+                System.out.println(c.titlu);
+                if (str.equals(c.titlu)) {
                     s.Adauga_curs(c);
+                    CursDB.inscrieStudent(s, c);
+                    ok = true;
                     break;
                 }
             }
-            if(ok==1)
-            {
-                System.out.println("Curs adaugat cu succes");
-            }
-            else
-                System.out.println("Nu exista acest curs");
+            if (ok) System.out.println("Curs adaugat cu succes");
+            else System.out.println("Nu exista acest curs");
             meniu_student(s);
-        }
-        else if(nr==3)
-        {
+        } else if (nr == 3) {
             s.afisare_teste_student();
             meniu_student(s);
-        }
-        else if(nr==4)
-        {
-            boolean ok=false;
+        } else if (nr == 4) {
             s.afisare_teste_student();
-            System.out.println("Pentru ce curs vrei sa rezolvi testul? \n");
+            System.out.println("Pentru ce curs vrei sa rezolvi testul?");
             String str = sc.next();
-            for(Curs c: cursVector)
-            {
-                if(str.equals(c.titlu))
-                {
-                    int cv = c.teste.size()-1;
-                    System.out.println("Alege un test: 0 - " + cv);
-
+            boolean ok = false;
+            for (Curs c : cursVector) {
+                if (str.equals(c.titlu)) {
+                    c.teste = TestDB.getTesteByCursId(c.getId(),s.getId());
+                    System.out.println("Alege un test: 0 - " + (c.teste.size() - 1));
                     int n = sc.nextInt();
                     s.rezolva_test(c.teste.get(n));
-                    ok=true;
+                    ok = true;
                     break;
                 }
             }
-            if(!ok)
-            {
-                System.out.println("Nu exista acest curs/test");
-            }
+            if (!ok) System.out.println("Nu exista acest curs/test");
+            meniu_student(s);
+        } else if(nr == 5) {
+            s.afisareTesteRezolvate();
             meniu_student(s);
         }
-        else if(nr==5)
-        {
+        else if (nr == 6) {
             meniu();
-        }
-        else
-        {
+        } else {
             System.out.println("Optiunea aleasa e invalida!");
             meniu_student(s);
         }

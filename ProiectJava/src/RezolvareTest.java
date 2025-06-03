@@ -1,7 +1,7 @@
-import java.util.List;
 import java.util.Vector;
 
 public class RezolvareTest {
+    private int id;
     private Student student;
     private Test testOriginal;
     private Vector<RezolvareIntrebare> raspunsuriStudent;
@@ -10,13 +10,13 @@ public class RezolvareTest {
     public RezolvareTest(Student student, Test test) {
         this.student = student;
         this.testOriginal = test;
-        this.scor = 0; // default
+        this.raspunsuriStudent = new Vector<>();
+        this.scor = 0;
     }
+
     public RezolvareTest(Student student, Test testOriginal, Vector<RezolvareIntrebare> raspunsuriStudent) {
-        this.student = student;
-        this.testOriginal = testOriginal;
+        this(student, testOriginal);
         this.raspunsuriStudent = raspunsuriStudent;
-        this.scor = -1;
     }
 
     public void setScor(int scor) {
@@ -27,10 +27,6 @@ public class RezolvareTest {
         return scor;
     }
 
-    public Student getStudent() {
-        return student;
-    }
-
     public Test getTestOriginal() {
         return testOriginal;
     }
@@ -39,14 +35,19 @@ public class RezolvareTest {
         return raspunsuriStudent;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Test rezolvat de " + student.name + ":\n");
-        for (RezolvareIntrebare r : raspunsuriStudent) {
-            sb.append(r).append("\n");
-        }
-        sb.append("Scor: ").append(scor == -1 ? "NENOTAT" : scor).append("\n");
-        return sb.toString();
+    public Student getStudent() {
+        return student;
     }
-}
 
+    public int getId() {
+        return id;
+    }
+
+    public void adaugaIntrebare(RezolvareIntrebare intrebare) {
+        raspunsuriStudent.add(intrebare);
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+
+}

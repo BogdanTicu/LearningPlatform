@@ -1,11 +1,11 @@
 public class RezolvareIntrebare {
+    private int id;
     private Intrebare intrebareOriginala;
     private String raspunsStudent;
-    //private int punctaj;
+
     public RezolvareIntrebare(Intrebare intrebareOriginala, String raspunsStudent) {
         this.intrebareOriginala = intrebareOriginala;
         this.raspunsStudent = raspunsStudent;
-        //this.punctaj = 0;
     }
 
     public Intrebare getIntrebare() {
@@ -16,9 +16,7 @@ public class RezolvareIntrebare {
         return raspunsStudent;
     }
 
-
-    @Override
-    public String toString() {
-        return intrebareOriginala.toString() + "\nRăspuns student: " + raspunsStudent;
+    public int getId() {
+        return id;
     }
 }

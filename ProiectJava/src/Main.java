@@ -1,15 +1,19 @@
+import java.sql.Connection;
 import java.util.Scanner;
-import java.util.Vector;
-//platforma de elearning.
 
-
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        Service service = new Service();
-        service.init_profesori();
-        service.init_studenti();
-        service.meniu();
+        try (Connection conn = MyJDBC.getConnection()) {
+            if (conn != null) {
+                System.out.println("✅ Conexiune reușită!");
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Eroare conexiune: " + e.getMessage());
+        }
+        Service s = new Service();
+       // s.init_studenti();
+       // s.init_profesori();
+        s.meniu();
+
     }
 }
